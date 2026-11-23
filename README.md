@@ -69,3 +69,44 @@ POST /knowledge/add
 - Sentence Transformers
 - ChromaDB
 - Pydantic
+
+# 🐞 BugPilot – GenAI Bug Triage Assistant
+
+**Live Demo:** https://bug-pilot-gen-ai.vercel.app/
+
+**Backend API:** https://bug-pilot-genai.onrender.com/
+
+**API Documentation:** https://bug-pilot-genai.onrender.com/docs
+
+## About the Project
+
+BugPilot is a Generative AI-powered Bug Triage Assistant that analyzes software bug reports and provides intelligent debugging recommendations using Google Gemini and Retrieval-Augmented Generation (RAG).
+
+## Features
+
+- Automated bug report analysis
+- Bug severity classification
+- Affected subsystem identification
+- Root-cause analysis
+- Similar issue retrieval using RAG
+- Debugging recommendations
+- Gemini-powered AI responses
+
+## Technology Stack
+
+- Frontend: React.js, Vite
+- Backend: Python, FastAPI
+- LLM: Google Gemini API
+- Embeddings: Gemini Embedding
+- Vector Database: ChromaDB
+- Deployment: Vercel and Render
+
+## How to Access
+
+Visit the live application:
+
+https://bug-pilot-gen-ai.vercel.app/
+
+## Developer
+
+Vivek Rathan
