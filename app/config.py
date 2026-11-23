@@ -4,11 +4,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.8-flash"
+    gemini_model: str = "gemini-3.5-flash-lite"
 
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_model: str = "gemini-embedding-001"
+
     chroma_path: str = "./chroma_db"
-    collection_name: str = "bug_knowledge"
+    collection_name: str = "bug_knowledge_gemini"
 
     top_k: int = 4
 
@@ -20,3 +21,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+

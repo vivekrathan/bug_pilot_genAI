@@ -36,7 +36,13 @@ class VectorStore:
             for doc in new_documents
         ]
 
-        embeddings = embedding_service.encode(texts)
+        embeddings = embedding_service.encode(
+            texts,
+            task_type="RETRIEVAL_DOCUMENT",
+            titles=[
+                doc["title"] for doc in new_documents
+            ]
+        )
 
         self.collection.add(
             ids=[doc["id"] for doc in new_documents],
@@ -53,16 +59,24 @@ class VectorStore:
         )
 
     def search(self, query: str, top_k: int = 4):
-        query_embedding = embedding_service.encode([query])[0]
+        collection_count = self.collection.count()
+
+        if collection_count == 0:
+            return []
+
+        query_embedding = embedding_service.encode(
+            [query],
+            task_type="RETRIEVAL_QUERY"
+        )[0]
 
         results = self.collection.query(
             query_embeddings=[query_embedding],
-            n_results=min(top_k, self.collection.count())
+            n_results=min(top_k, collection_count)
         )
 
         matches = []
 
-        if not results["ids"]:
+        if not results["ids"] or not results["ids"][0]:
             return matches
 
         for index, document_id in enumerate(results["ids"][0]):
@@ -75,7 +89,9 @@ class VectorStore:
                 "content": results["documents"][0][index],
                 "source": metadata.get("source", "unknown"),
                 "component": metadata.get("component", "unknown"),
-                "similarity": round(max(0.0, 1.0 - distance), 4)
+                "similarity": round(
+                    max(0.0, 1.0 - distance), 4
+                )
             })
 
         return matches

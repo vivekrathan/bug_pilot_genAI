@@ -1,7 +1,8 @@
-from fastapi.middleware.cors import CORSMiddleware
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.schemas import (
     BugReport,
@@ -13,13 +14,19 @@ from app.vector_store import (
     initialize_knowledge_base,
     vector_store
 )
-from app.embeddings import embedding_service
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load sample knowledge into ChromaDB on startup.
+    print("Initializing BugPilot knowledge base...")
+
     initialize_knowledge_base()
+
+    print(
+        f"Knowledge base ready: "
+        f"{vector_store.collection.count()} documents"
+    )
+
     yield
 
 
@@ -32,6 +39,8 @@ app = FastAPI(
     version="2.0.0",
     lifespan=lifespan
 )
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -42,6 +51,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 def home():
@@ -69,9 +79,7 @@ def health():
 @app.post("/triage", response_model=TriageResponse)
 def triage_bug(report: BugReport):
     try:
-        result = analyze_bug_report(
-            report.model_dump()
-        )
+        result = analyze_bug_report(report.model_dump())
         return result
 
     except ValueError as error:
@@ -90,9 +98,11 @@ def triage_bug(report: BugReport):
 @app.post("/knowledge/add")
 def add_knowledge(document: KnowledgeDocument):
     try:
+        import uuid
+
         vector_store.add_documents([
             {
-                "id": __import__("uuid").uuid4().hex,
+                "id": uuid.uuid4().hex,
                 "title": document.title,
                 "content": document.content,
                 "source": document.source,
